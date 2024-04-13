@@ -36,9 +36,9 @@ export async function createInvoice(formData: FormData) {
 }
 
 // use Zod to update the expected values
-/* const UpdateInvoice = FormSchema.omit({ id: true, date: true })
+const UpdateInvoice = FormSchema.omit({ id: true, date: true })
 
-export default async function updateInvoice(id: string, formData: FormData) {
+export async function updateInvoice(id: string, formData: FormData) {
 	const { customerId, amount, status } = UpdateInvoice.parse({
 		customerId: formData.get('customerId'),
 		amount: formData.get('amount'),
@@ -49,6 +49,10 @@ export default async function updateInvoice(id: string, formData: FormData) {
 
 	await sql`
 		UPDATE invoices
-		SET customer_id = ${customerId}
-	`
-} */
+		SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+		WHERE id = ${id}
+	`;
+
+	revalidatePath('/dashboard/invoices');
+	redirect('/dashboard/invoices');
+}
